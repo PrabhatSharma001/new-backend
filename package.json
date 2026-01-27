@@ -1,0 +1,11 @@
+{
+  "name": "videoapp",
+  "version": "1.0.0",
+  "description": "this is video Tube App learn from youtube Hitesh Choudhary",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Prabhat Sharma",
+  "license": "ISC"
+}
