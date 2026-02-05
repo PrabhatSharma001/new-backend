@@ -16,65 +16,66 @@ const registerUser=asyncHandler(async(req,res)=>{
     //8- check for user creation
     //9- return response
 
-    const{fullName,email,username,password}=req.body;
-    // console.log("FullName is+++++++++ ",fullName);
+    const { fullName, email, username, password } = req.body;
 
-    if([fullName,email,username,password].some((field)=>field?.trim()==="")){
-        throw new ApiError(404,"All fields are required")
+
+    if ([fullName, email, username, password].some((field) => field?.trim() === "")) {
+        throw new ApiError(404, "All fields are required")
     }
 
-// check out if user existed in DB or not
+    // check out if user existed in DB or not
 
-const userExits=User.findOne({
-    $or:[{username},{email}]
-})
+    const userExits = await User.findOne({
+        $or: [{ username }, { email }]
+    })
 
-if(userExits){
-    throw new ApiError(409,"User with email or username already Exist")
-}
-
-
-// now we will check if avtar and coverImages exist on server or not using multer 
-// like req.body multer gives us a files method to get file path
-
-const avtarFilePath=req.files?.avatar[0].path;
-const coverImageFilePath=req.files?.avatar[0].path;
-
-if(!avtarFilePath) throw new ApiError(400,"Avtar is required")
-console.log("AVtar local path is",avtarFilePath);
+    if (userExits) {
+        throw new ApiError(409, "User with email or username already Exist")
+    }
 
 
-if(!coverImageFilePath) throw new ApiError(400,"CoverImage is required")
-console.log("CoverImage local path is",coverImageFilePath);
+    // now we will check if avtar and coverImages exist on server or not using multer 
+    // like req.body multer gives us a files method to get file path
+
+
+    const avtarFilePath = req.files?.avtar[0]?.path;
+    const coverImageFilePath = req.files?.coverImage[0]?.path;
+
+    if (!avtarFilePath) throw new ApiError(400, "Avtar is required")
 
 
 
+    if (!coverImageFilePath) throw new ApiError(400, "CoverImage is required")
 
-const avtar=await uploadOnCloudinary(avtarFilePath);
-const coverImage=await uploadOnCloudinary(coverImageFilePath);
 
-if(!avtar) throw new ApiError(400,"Avtar is required");
+    const avtar = await uploadOnCloudinary(avtarFilePath);
+    const coverImage = await uploadOnCloudinary(coverImageFilePath);
 
-// now we will cerate a user in db
 
-const user=User.create({
+    if (!avtar) throw new ApiError(400, "Avtar is required");
+
+    // now we will cerate a user in db
+
+  const user = await User.create({
     fullName,
-    avtar:avtar.url,
-    coverImage:coverImage?.url||"",
+    avtar: avtar.url,
+    coverImage: coverImage?.url || "",
     email,
     password,
-    username:username.toLowerCase()
-})
+    username: username.toLowerCase(),
+  });
 
-const createdUser=await User.findById(user._id).select("-password -refreshToken")
-if(!createdUser) throw new ApiError(500,"Something went wrong while registering user")
+
+    const createdUser = await User.findById(user._id).select("-password -refreshToken")
+    
+    if (!createdUser) throw new ApiError(500, "Something went wrong while registering user")
 
     return res.status(201).json(
-        new ApiResponse(200,createdUser,"User registered successfully")
+        new ApiResponse(200, createdUser, "User registered successfully")
     )
 })
 
 
 
 
-export {registerUser}
+export { registerUser }
