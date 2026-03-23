@@ -1,28 +1,33 @@
 import { Router } from "express";
-import { loginUser, logoutUser, refreshAccessToken, registerUser } from "../controllers/user.controller.js";
+import { changeCurrentPassword, getCurrentUser, loginUser, logoutUser, refreshAccessToken, registerUser, updateUser, updateUserAvatar, updateUserCoverImage } from "../controllers/user.controller.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 
-const router=Router();
+const router = Router();
 
-//here we have injected upload middleware (upload) to upload coverimage and avtar image
+//here we have injected upload middleware (upload) to upload coverimage and avatar image
 
 router.route("/register").post(upload.fields([
     {
-        name:'avtar', //this name feild should be same in frontend and backend
-        maxCount:1
+        name: 'avatar', //this name feild should be same in frontend and backend
+        maxCount: 1
     },
     {
-        name:'coverImage',
-        maxCount:1
+        name: 'coverImage',
+        maxCount: 1
     }
-]),registerUser)
+]), registerUser)
 
 router.route("/login").post(loginUser)
 
 // secured routes
 
-router.route("/logout").post(verifyJwt,logoutUser);
-router.route("/refresh-token").post(refreshAccessToken)
+router.route("/logout").post(verifyJwt, logoutUser);
+router.route("/refresh-token").post(verifyJwt,refreshAccessToken)
+router.route("/change-password").patch(verifyJwt,changeCurrentPassword);
+router.route("/get-user").get(verifyJwt,getCurrentUser);
+router.route("/update-user").patch(verifyJwt,updateUser);
+router.route("/update-avatar").patch(verifyJwt,upload.single("avatar"),updateUserAvatar);
+router.route("/update-coverImage").patch(verifyJwt,upload.single("coverImage"),updateUserCoverImage)
 
 export default router;

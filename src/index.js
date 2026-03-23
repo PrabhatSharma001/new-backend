@@ -6,21 +6,21 @@ import { app } from "./app.js";
 // const app= express();
 
 dotenv.config({
-    path:'./env'
+	path: './env'
 })
 
 
 connectDB()
-.then(()=>{
-    app.on("error",(error)=>{
-        console.log("Err",error);
-        throw error;
-    })
-    app.listen(process.env.PORT||8000,()=>{
-        console.log(`Server is listening at port : ${process.env.PORT}`);
-    })
-})
-.catch((error)=>{
-    console.log("Mongo DB connection failed !!",error);
-    
-})
+	.then(() => {
+		app.on("error", (error) => {
+			console.log("Err", error);
+			throw error;
+		})
+		app.listen(process.env.PORT || 8000, () => {
+			console.log(`Server is listening at port : ${process.env.PORT}`);
+		})
+	})
+	.catch((error) => {
+		console.log("Mongo DB connection failed !!", error);
+
+	})
